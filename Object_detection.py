@@ -1,15 +1,14 @@
 import cv2
 import numpy as np
+import json
 
 net = cv2.dnn.readNet("./trained_model/yolov3_final.weights", "./trained_model/yolov3.cfg")
-classes = []
 with open('./trained_model/obj.names', 'r') as f:
     classes = [line.strip() for line in f.readlines()]
 
 layer_names = net.getLayerNames()
 output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 colors = np.random.uniform(0, 255, size=(len(classes), 3))
-
 
 
 # Loading Web-cam
@@ -92,7 +91,8 @@ while True:
 
     if cv2.waitKey(delay) & 0xFF == ord('q'): break
 
-print(detect_log)
+with open('./data/detect_log/detect_log.json', 'w') as outfile:
+    json.dump(detect_log, outfile)
 
 cap.release()
 writer.release()
