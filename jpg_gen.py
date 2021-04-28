@@ -1,7 +1,7 @@
 import cv2
 import time
 
-cap = cv2.VideoCapture('./data/video/example.mp4')
+cap = cv2.VideoCapture('./data/video/ice_shot.mp4')
 FPS = 35
 prev_time = 0
 count = 0
