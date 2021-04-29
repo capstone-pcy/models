@@ -8,8 +8,8 @@ input_file_path = './data/video/'
 output_file_path = './data/output_video/'
 log_file_path = './data/detect_log/'
 
-net = cv2.dnn.readNet(model_path + 'ice_shot_yolov3_final.weights', model_path + 'ice_shot_yolov3.cfg')
-with open(model_path + 'ice_shot_obj.names', 'r') as f:
+net = cv2.dnn.readNet(model_path + 'yolov3_final.weights', model_path + 'yolov3.cfg')
+with open(model_path + 'obj.names', 'r') as f:
     classes = [line.strip() for line in f.readlines()]
 
 layer_names = net.getLayerNames()
