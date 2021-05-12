@@ -2,14 +2,19 @@ import cv2
 import numpy as np
 import json
 import os
+import math
 
-model_path = './trained_model/'
-input_file_path = './data/video/'
-output_file_path = './data/output_video/'
-log_file_path = './data/detect_log/'
+model_path = "trained_model/"
+input_file_path = "data/video/"
+output_file_path = 'data/output_video/'
+log_file_path = 'data/detect_log/'
 
-net = cv2.dnn.readNet(model_path + 'yolov3_last.weights', model_path + 'yolov3.cfg')
-with open(model_path + 'obj.names', 'r') as f:
+weight_path = os.path.join(model_path + 'yolov3_last.weights')
+cfg_path = os.path.join(model_path + 'yolov3.cfg')
+names_path = os.path.join(model_path + 'obj.names')
+
+net = cv2.dnn.readNet(weight_path, cfg_path)
+with open(names_path, 'r') as f:
     classes = [line.strip() for line in f.readlines()]
 
 layer_names = net.getLayerNames()
@@ -28,18 +33,26 @@ for file_ in file_list:
     # Loading Video
     cap = cv2.VideoCapture(input_file_path + file_)
 
-    detect_log = {}
+
+    tablet_logs = dict()
+    phone_logs = dict()
+    watch_logs = dict()
+
+
     FPS = cap.get(cv2.CAP_PROP_FPS)
     delay = round(1000 / FPS)
     frame_second = 0
 
-    os.makedirs(output_file_path + file_name, exist_ok=True)
-    output_file_dir = file_name + '/'
-    output_file_name = 'output_' + file_name + '.avi'
+    makedir_path = os.path.join(output_file_path + file_name)
+    os.makedirs(makedir_path, exist_ok=True)
+    output_file_dir = os.path.join(file_name + '/')
+    output_file_name = os.path.join('output_' + file_name + '.avi')
 
     os.makedirs(log_file_path + file_name, exist_ok=True)
     log_file_dir = file_name + '/'
-    log_file_name = file_name + '_detect_log.json'
+    phone_log_name = file_name + '-phone_detect_log.json'
+    watch_log_name = file_name + '-watch_detect_log.json'
+    tablet_log_name = file_name + '-tablet_detect_log.json'
 
     # 코덱 지정, *는 문자를 풀어쓰는 방식 *'DIVX' == 'D', 'I', 'V', 'X'
     fourcc = cv2.VideoWriter_fourcc(*'DIVX')
@@ -101,15 +114,67 @@ for file_ in file_list:
                 color = colors[0]
                 cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
                 cv2.putText(frame, label, (x, y + 30), font, 3, color, 3)
-                detect_log[frame_second] = (label, confidences[i])
+
+                if label == "smartphone":
+                    phone_logs[frame_second] = (label, confidences[i])
+                elif label == "smartwatch":
+                    watch_logs[frame_second] = (label, confidences[i])
+                elif label == "tablet":
+                    tablet_logs[frame_second] = (label, confidences[i])
 
         cv2.imshow('frame', frame)
         writer.write(frame)
 
         if cv2.waitKey(delay) & 0xFF == ord('q'): break
+    
+    cur_sec = 0
+    max_conf = 0
 
-    with open(log_file_path + log_file_dir + log_file_name, 'w') as outfile:
-        json.dump(detect_log, outfile)
+    sec_wise_phone = dict()
+    sec_wise_watch = dict()
+    sec_wise_tablet = dict()
+
+    for sec, values in phone_logs.items():
+        if cur_sec < math.floor(sec): 
+            cur_sec = math.floor(sec)
+            max_conf = 0
+        
+        if max_conf < values[1]:
+            max_conf = values[1]
+            sec_wise_phone[cur_sec] = values
+    
+    cur_sec = 0
+    max_conf = 0
+    
+    for sec, values in watch_logs.items():
+        if cur_sec < math.floor(sec): 
+            cur_sec = math.floor(sec)
+            max_conf = 0
+        
+        if max_conf < values[1]:
+            max_conf = values[1]
+            sec_wise_watch[cur_sec] = values
+    
+    cur_sec = 0
+    max_conf = 0
+    
+    for sec, values in tablet_logs.items():
+        if cur_sec < math.floor(sec): 
+            cur_sec = math.floor(sec)
+            max_conf = 0
+        
+        if max_conf < values[1]:
+            max_conf = values[1]
+            sec_wise_tablet[cur_sec] = values
+
+    with open(log_file_path + log_file_dir + phone_log_name, 'w') as outfile:
+        json.dump(sec_wise_phone, outfile)
+    
+    with open(log_file_path + log_file_dir + watch_log_name, 'w') as outfile:
+        json.dump(sec_wise_watch, outfile)
+    
+    with open(log_file_path + log_file_dir + tablet_log_name, 'w') as outfile:
+        json.dump(sec_wise_tablet, outfile)
 
     cap.release()
     writer.release()
