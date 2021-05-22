@@ -1,13 +1,11 @@
 import cv2
 import numpy as np
-import json
 import os
-import math
+
+from .calc_mAP import utils
 
 model_path = "trained_model/"
 val_imgs_dir = "data/val_imgs/"
-val_result_dir = 'data/output_video/'
-log_file_path = 'data/detect_log/'
 
 weight_path = os.path.join(model_path + 'yolov3_last.weights')
 cfg_path = os.path.join(model_path + 'yolov3.cfg')
@@ -56,6 +54,7 @@ for file_ in file_list:
                 center_y = int(detection[1] * height)
                 w = int(detection[2] * width)
                 h = int(detection[3] * height)
+                
 
                 # 좌표
                 x = int(center_x - w / 2)
@@ -74,7 +73,7 @@ for file_ in file_list:
             color = colors[0]
             cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
             cv2.putText(img, label, (x, y + 30), font, 3, color, 3)
-
-    cap.release()
+    
+    cv2.imshow("image", img)
+    cv2.waitKey()
     cv2.destroyAllWindows()
-
