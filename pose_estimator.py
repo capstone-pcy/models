@@ -1,8 +1,12 @@
 import cv2
+import os
 import mediapipe as mp
 import time
 import math
 
+input_file_dir = "data/video"
+output_file_dir = "data/output_video"
+log_file_dir = "data/pose_log"
 
 class poseDetector():
 
@@ -71,27 +75,36 @@ class poseDetector():
         return angle
 
 def main():
-    cap = cv2.VideoCapture(0)
-    pTime = 0
-    detector = poseDetector()
-    while True:
-        success, img = cap.read()
-        img = detector.findPose(img)
-        lmList = detector.findPosition(img, draw=False)
-        if len(lmList) != 0:
-            print(lmList[14])
-            cv2.circle(img, (lmList[14][1], lmList[14][2]), 15, (0, 0, 255), cv2.FILLED)
 
-        cTime = time.time()
-        fps = 1 / (cTime - pTime)
-        pTime = cTime
+    file_list = os.listdir(input_file_dir)
 
-        cv2.putText(img, str(int(fps)), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3,
+    for file_ in file_list:
+
+        file_name = os.path.splitext(file_)[0]
+        print(f"=============[work on {file_name}]=============")
+
+        cap = cv2.VideoCapture(os.path.join(input_file_dir, file_))
+
+        pTime = 0
+
+        detector = poseDetector()
+
+        while True:
+            success, img = cap.read()
+            img = detector.findPose(img)
+            lmList = detector.findPosition(img, draw=False)
+            if len(lmList) != 0:
+                print(lmList[14])
+                cv2.circle(img, (lmList[14][1], lmList[14][2]), 15, (0, 0, 255), cv2.FILLED)
+            
+            cTime = time.time()
+            fps = 1 /(cTime - pTime)
+            pTime = cTime
+            cv2.putText(img, str(int(fps)), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3,
                     (255, 0, 0), 3)
-
-        cv2.imshow("Image", img)
-        cv2.waitKey(1)
-
+            
+            cv2.imshow("Image", img)
+            cv2.waitKey(1)
 
 if __name__ == "__main__":
     main()
