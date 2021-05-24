@@ -6,12 +6,12 @@ import math
 
 model_path = "trained_model/"
 input_file_path = "data/video/"
-output_file_path = 'data/output_video/'
-log_file_path = 'data/detect_log/'
+output_file_path = 'data/output_video/detection'
+log_file_path = 'data/log/detect_log/'
 
-weight_path = os.path.join(model_path + 'yolov3_last.weights')
-cfg_path = os.path.join(model_path + 'yolov3.cfg')
-names_path = os.path.join(model_path + 'obj.names')
+weight_path = os.path.join(model_path + 'weights/yolov3_05-24.weights')
+cfg_path = os.path.join(model_path + 'configs/yolov3_05-24.cfg')
+names_path = os.path.join(model_path + 'names/obj_05-24.names')
 
 net = cv2.dnn.readNet(weight_path, cfg_path)
 with open(names_path, 'r') as f:
@@ -179,3 +179,4 @@ for file_ in file_list:
     cap.release()
     writer.release()
     cv2.destroyAllWindows()
+

@@ -97,7 +97,6 @@ def main():
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         writer = cv2.VideoWriter(output_file_path, fourcc, FPS, (width, height), True)
-    
 
         pTime = 0
 
@@ -118,7 +117,7 @@ def main():
             cTime = time.time()
             fps = 1 /(cTime - pTime)
             pTime = cTime
-            cv2.putText(img, str(int(fps)), (70, 50), cv2.FONT_HERSHEY_PLAIN, 3,
+            cv2.putText(img, f"FPS is {str(int(fps))}", (70, 50), cv2.FONT_HERSHEY_PLAIN, 3,
                     (255, 0, 0), 3)
             
             cv2.imshow("Image", img)
