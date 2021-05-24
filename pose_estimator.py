@@ -5,8 +5,8 @@ import time
 import math
 
 input_file_dir = "data/video"
-output_file_dir = "data/output_video"
-log_file_dir = "data/pose_log"
+output_file_dir = "data/output_video/pose_estimate"
+log_file_dir = "data/log/pose_log"
 
 class poseDetector():
 
@@ -81,9 +81,23 @@ def main():
     for file_ in file_list:
 
         file_name = os.path.splitext(file_)[0]
-        print(f"=============[work on {file_name}]=============")
 
         cap = cv2.VideoCapture(os.path.join(input_file_dir, file_))
+
+        FPS = cap.get(cv2.CAP_PROP_FPS)
+        delay = round(1000 / FPS)
+
+        make_dir = os.path.join(output_file_dir, file_name)
+        os.makedirs(make_dir, exist_ok=True)
+        output_file_path = os.path.join(output_file_dir, file_name + '/')
+        output_file_name = 'output_' + file_name + '.avi'
+        output_file_path = os.path.join(output_file_path, output_file_name)
+
+        fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        writer = cv2.VideoWriter(output_file_path, fourcc, FPS, (width, height), True)
+    
 
         pTime = 0
 
@@ -91,6 +105,10 @@ def main():
 
         while True:
             success, img = cap.read()
+
+            if not success:
+                break
+
             img = detector.findPose(img)
             lmList = detector.findPosition(img, draw=False)
             if len(lmList) != 0:
@@ -104,7 +122,9 @@ def main():
                     (255, 0, 0), 3)
             
             cv2.imshow("Image", img)
-            cv2.waitKey(1)
+            writer.write(img)
+
+            if cv2.waitKey(delay) & 0xFF == ord('q') : break
 
 if __name__ == "__main__":
     main()
