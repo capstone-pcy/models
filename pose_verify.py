@@ -45,6 +45,10 @@ def main():
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         writer = cv2.VideoWriter(output_file_path, fourcc, FPS, (width, height), True)
 
+        right_hand_logs = dict()
+        left_hand_logs = dict()
+        face_logs = dict()
+
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
 
             while True:
@@ -53,10 +57,6 @@ def main():
                 if not ret : break
 
                 frame_second += (1 / FPS)
-
-                right_hand_logs = dict()
-                left_hand_logs = dict()
-                face_logs = dict()
 
                 # Recolor feed
                 image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -72,25 +72,25 @@ def main():
                 # Draw face landmarks
                 if results.face_landmarks:
                     mp_drawing.draw_landmarks(image, results.face_landmarks, mp_holistic.FACE_CONNECTIONS)
-                    face_logs[frame_second] = 0
+                    face_logs[frame_second] = (0)
                 else:
-                    face_logs[frame_second] = 1
+                    face_logs[frame_second] = (1)
 
         
                 # Draw right hand landmarks
                 if results.right_hand_landmarks:
                     mp_drawing.draw_landmarks(image, results.right_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
-                    right_hand_logs[frame_second] = 0
+                    right_hand_logs[frame_second] = (0)
                 else:
-                    right_hand_logs[frame_second] = 1
+                    right_hand_logs[frame_second] = (1)
         
 
                 # Draw left hand landmarks
                 if results.left_hand_landmarks:
                     mp_drawing.draw_landmarks(image, results.left_hand_landmarks, mp_holistic.HAND_CONNECTIONS)
-                    left_hand_logs[frame_second] = 0
+                    left_hand_logs[frame_second] = (0)
                 else:
-                    left_hand_logs[frame_second] = 1
+                    left_hand_logs[frame_second] = (1)
         
         
                 cv2.imshow("image", image)
@@ -101,12 +101,12 @@ def main():
         cap.release()
         cv2.destroyAllWindows()
 
-        cur_sec = 0
-        avg = 0
-
         sec_wise_face = dict()
         sec_wise_rhand = dict()
         sec_wise_lhand = dict()
+
+        cur_sec = 0
+        avg = 0
 
         for sec, value in face_logs.items():
             if cur_sec < math.floor(sec):
