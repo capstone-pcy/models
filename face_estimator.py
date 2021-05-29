@@ -18,6 +18,7 @@ log_file_dir = "data/log/face_log/"
 
 mp_drawing = mp.solutions.drawing_utils
 mp_holistic = mp.solutions.holistic
+mp_face_detection = mp.solutions.face_detection
 
 def main():
 
@@ -41,6 +42,7 @@ def main():
         os.makedirs(log_file_dir + file_name, exist_ok=True)
         log_file_path = os.path.join(log_file_dir, file_name + '/')
         face_log_path = os.path.join(log_file_path, file_name + '-face_log.json')
+        multiFace_log_path = os.path.join(log_file_path, file_name + '-multiFace_log.json')
 
         # make output video's directory
         os.makedirs(output_dir + file_name, exist_ok=True)
@@ -55,9 +57,75 @@ def main():
 
         # create dictoinary for json log file
         face_logs = dict()
+        multiFace_logs = dict()
+
+        with mp_face_detection.FaceDetection(min_detection_confidence=0.5) as face_detection:
+
+            while True:
+                ret, frame = cap.read()
+
+                if not ret : break
+
+                frame_second += (1 / FPS)
+
+                image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                image.flags.writeable = False
+
+                results = face_detection.process(image)
+
+                image.flags.writeable = True
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+                # Draw face landmarks
+                if results.detections:
+                    if len(results.detections) == 1:
+                        multiFace_logs[frame_second] = (0)
+                    else : 
+                        multiFace_logs[frame_second] = (1)
+
+                    for detection in results.detections:
+                        mp_drawing.draw_detection(image, detection)
+                else : 
+                    multiFace_logs[frame_second] = (1)
+
+                # cv2.imshow("Face Detection results", image)
+                writer.write(image)
+
+                if cv2.waitKey(delay) & 0xFF == ord('q') : break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
+        cur_sec = 0
+        avg = 0
+
+        multiFace_log = dict()
+
+        for sec, val in multiFace_logs.items():
+            if cur_sec < math.floor(sec):
+                multiFace_log[cur_sec] = avg / FPS
+                cur_sec = math.floor(sec)
+                avg = 0
+            else:
+                avg += val
+        
+        with open(multiFace_log_path, 'w') as outfile:
+            json.dump(multiFace_log, outfile)
+
+
+        cap = cv2.VideoCapture(os.path.join(input_dir, file_))
+
+        FPS = cap.get(cv2.CAP_PROP_FPS)
+        delay = round(1000/FPS)
+        frame_second = 0
+
+        # define video writer
+        fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        writer = cv2.VideoWriter(out_video_path, fourcc, FPS, (width, height), True)
 
         with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-
             while True:
                 ret, frame = cap.read()
 
@@ -120,10 +188,10 @@ def main():
 
                 except : pass
 
-                cv2.imshow("Results", image)
+                # cv2.imshow("Results", image)
                 writer.write(image)
 
-                if cv2.waitKey(10) & 0xFF == ord('q') : break
+                if cv2.waitKey(delay) & 0xFF == ord('q') : break
             
         cap.release()
         writer.release()
