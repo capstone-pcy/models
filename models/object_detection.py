@@ -4,12 +4,15 @@ import json
 import os
 import math
 
+from .utils import INPUT_DIR
+from .utils import OBJECT_MODEL_DIR, OBJECT_OUTPUT_DIR, OBJECT_LOG_DIR
+
 def objectDetector() :
 
-    model_path = "trained_model/"
-    input_file_path = "data/video/"
-    output_file_path = 'data/output_video/detection/'
-    log_file_path = 'data/log/detect_log/'
+    model_path = OBJECT_MODEL_DIR
+    input_file_path = INPUT_DIR
+    output_file_path = OBJECT_OUTPUT_DIR
+    log_file_path = OBJECT_LOG_DIR
 
     weight_path = os.path.join(model_path + 'weights/yolov3_05-24.weights')
     cfg_path = os.path.join(model_path + 'configs/yolov3_05-24.cfg')

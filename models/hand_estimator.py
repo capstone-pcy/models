@@ -5,11 +5,14 @@ import math
 import json
 from tqdm import tqdm
 
+from .utils import INPUT_DIR
+from .utils import HAND_OUTPUT_DIR, HAND_LOG_DIR
+
 def handEstimator():
 
-    input_dir = "data/video/"
-    output_dir = "data/output_video/hand_estimate/"
-    log_file_dir = "data/log/hand_log/"
+    input_dir = INPUT_DIR
+    output_dir = HAND_OUTPUT_DIR
+    log_file_dir = HAND_LOG_DIR
 
     mpHands = mp.solutions.hands
     hands = mpHands.Hands()

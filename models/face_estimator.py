@@ -8,14 +8,17 @@ from tqdm import tqdm
 import math
 import json
 
+from .utils import INPUT_DIR
+from .utils import FACE_MODEL_DIR, FACE_OUTPUT_DIR, FACE_LOG_DIR
+
 def faceEstimator():
 
-    model_dir = "trained_model/ml/"
+    model_dir = FACE_MODEL_DIR
     model_path = os.path.join(model_dir, 'face_estimator.pkl')
 
-    input_dir = "data/video/"
-    output_dir = "data/output_video/face_estimate/"
-    log_file_dir = "data/log/face_log/"
+    input_dir = INPUT_DIR
+    output_dir = FACE_OUTPUT_DIR
+    log_file_dir = FACE_LOG_DIR
 
     mp_drawing = mp.solutions.drawing_utils
     mp_holistic = mp.solutions.holistic
