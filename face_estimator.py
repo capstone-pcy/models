@@ -98,16 +98,19 @@ def main():
 
         cur_sec = 0
         avg = 0
+        cnt = 0
 
         multiFace_log = dict()
 
         for sec, val in multiFace_logs.items():
             if cur_sec < math.floor(sec):
-                multiFace_log[cur_sec] = avg / FPS
                 cur_sec = math.floor(sec)
                 avg = 0
-            else:
-                avg += val
+                cnt = 0
+            
+            avg += val
+            cnt += 1
+            multiFace_log[cur_sec] = avg / cnt
         
         with open(multiFace_log_path, 'w') as outfile:
             json.dump(multiFace_log, outfile)
@@ -207,7 +210,7 @@ def main():
                 cur_sec = math.floor(sec)
                 max_conf = 0
             
-            if max_conf < val:
+            if max_conf <= val:
                 max_conf = val
                 face_log[cur_sec] = val
         

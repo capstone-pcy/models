@@ -6,8 +6,8 @@ import json
 from tqdm import tqdm
 
 input_dir = "data/video/"
-output_dir = "data/output_video/pose_estimate/"
-log_file_dir = "data/log/pose_log/"
+output_dir = "data/output_video/hand_estimate/"
+log_file_dir = "data/log/hand_log/"
 
 mpHands = mp.solutions.hands
 hands = mpHands.Hands()
@@ -83,14 +83,17 @@ def main():
 
         cur_sec = 0
         avg = 0
+        cnt = 0
 
         for sec, val in hand_logs.items():
             if cur_sec < math.floor(sec):
-                hand_log[cur_sec] = avg / FPS
                 cur_sec = math.floor(sec)
                 avg = 0
-            else:
-                avg += val
+                cnt = 0
+            
+            avg += val
+            cnt += 1
+            hand_log[cur_sec] = avg / cnt
         
         with open(hand_log_path, 'w') as outfile:
             json.dump(hand_log, outfile)
