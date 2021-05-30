@@ -1,6 +1,6 @@
 import argparse
 
-from models import faceEstimator, handEstimator, objectDetector
+from models import faceEstimator, handEstimator, objectDetector, liveFaceEstimator
 
 def _setup_parser():
 
@@ -16,7 +16,7 @@ def main():
 
     args = parser.parse_args()
 
-    assert args.model in ("faceEstimator", "handEstimator", "objectDetector"), \
+    assert args.model in ("faceEstimator", "handEstimator", "objectDetector","liveFaceEstimator"), \
         "'--model' argument has to be one of 'faceEstimator', 'handEstimator' and 'objectDetector'"
 
     if args.model == "faceEstimator":
@@ -25,6 +25,8 @@ def main():
         handEstimator()
     elif args.model == "objectDetector":
         objectDetector()
+    elif args.model == "liveFaceEstimator":
+        liveFaceEstimator("18011863_youngmin")
 
 if __name__ == "__main__":
     main()

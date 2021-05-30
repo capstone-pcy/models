@@ -96,6 +96,7 @@ def faceEstimator():
                 if cv2.waitKey(delay) & 0xFF == ord('q') : break
 
         cap.release()
+        writer.release()
         cv2.destroyAllWindows()
 
         cur_sec = 0
@@ -218,7 +219,3 @@ def faceEstimator():
         
         with open(face_log_path, 'w') as outfile:
             json.dump(face_log, outfile)
-        
-
-if __name__ == "__main__":
-    faceEstimator()
