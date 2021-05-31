@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src="./static/video/log/anyvideo/anyvideo-hand_log.json"></script>
+</head>
+
+<body>
+    <div id='myDiv'></div>
+</body>
+<script>
+    var trace1 = {
+        x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        y: [0.25, 0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.58, 0.96, 0.96],
+        xaxis: 'x1',
+        yaxis: 'y1',
+        name: 'Phone',
+        mode: 'lines+markers',
+        type: 'scatter'
+    };
+
+    var trace2 = {
+        x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        y: [0.38, 0.98, 0.97, 1.0, 1.0, 1.0, 1.0, 0.99, 0.98, 0.97, 0.95, 0.99],
+        name: 'smartwatch',
+        mode: 'lines+markers',
+        xaxis: 'x1',
+        yaxis: 'y1',
+        type: 'scatter'
+    };
+
+    var trace3 = {
+        x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        y: [0.0, 0.0, 0.13, 0.08, 0.0, 0.08, 0.0, 0.0, 0.0, 0.04, 0.0, 0.33],
+        name: 'tablet',
+        xaxis: 'x1',
+        yaxis: 'y1',
+        type: 'scatter'
+    };
+    
+    var table = {
+        type: 'table',
+        columnwidth: [150, 200, 200, 150],
+        columnorder: [0, 1, 2, 3],
+        header: {
+            values: ['timestamp', 'probability'],
+            align: "center",
+            line: {width: 1, color: 'rgb(50, 50, 50)'},
+            fill: {color: ['rgb(25, 100, 230)']},
+            font: {family: "Arial", size: 11, color: "white"}
+        },
+        cells: {
+            values: [[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [0.38, 0.98, 0.97, 1.0, 1.0, 1.0, 1.0, 0.99, 0.98, 0.97, 0.95, 0.99, 0.3]],
+            align: ["center", "center"],
+            line: {color: "black", width: 1},
+            fill: {color: ['rgb(25, 193, 238)', 'rgba(228, 222, 249, 0.65)']},
+            font: {family: "Arial", size: 10, color: ["black"]}
+        },
+        xaxis: 'x2',
+        yaxis: 'y2',
+        domain: {x: [0,0.4], y: [0, 1]}
+    }
+    
+
+    var data = [table, trace1, trace2, trace3];
+
+    var axis = {
+        showline: true,
+        zeroline: false,
+        showgrid: true,
+        mirror: true,
+        ticklen: 4,
+        gridcolor: '#ffffff',
+        tickfont: {size: 10}
+    }
+
+    var axis1 = {domain: [0.5, 1], anchor: 'y1', showticklabels: false}
+    var axis2 = {domain: [0.5, 1], anchor: 'y2', showticklabels: false}
+    var axis3 = {domain: [0.5, 1], anchor: 'y3'}
+    var axis4 = {domain: [0.66, 0.98], anchor: 'x1', tickprefix: '%', hoverformat: '.2f'}
+    var axis5 = {domain: [0.34, 0.64], anchor: 'x2', tickprefix: '%', hoverformat: '.2f'}
+    var axis6 = {domain: [0.0, 0.32], anchor: 'x3', tickprefix: '%', hoverformat: '.2f'}
+
+    var layout = {
+        title: 'mYploT',
+        plot_bgcolor: 'rgba(228, 222, 249, 0.65)',
+        xaxis1: Object.assign(axis1,axis),
+        xaxis2: Object.assign(axis2,axis),
+        xaxis3: Object.assign(axis3,axis),
+        yaxis1: Object.assign(axis4,axis),
+        yaxis2: Object.assign(axis5,axis),
+        yaxis3: Object.assign(axis6,axis)
+    };
+
+    Plotly.newPlot('myDiv', data, layout);
+</script>
+
+</html>
