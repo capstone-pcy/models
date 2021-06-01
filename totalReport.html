@@ -18,19 +18,54 @@
 </body>
 <script>
     // 부정 지수 값 (높은 순서 대로)
-    var mcpY = [0.99, 0.99, 0.98, 0.98, 0.85, 0.85, 0.65, 0.64, 0.40, 0.38, 0.3, 0.3, 0.28, 0.2, 0.18, 0.1];
+    var mcpY = [0.99, 0.98, 0.98, 0.85, 0.85, 0.65, 0.64, 0.40, 0.38, 0.3, 0.3, 0.28, 0.2, 0.18, 0.1];
     // 높은 순서대로 넘어와야 함.
-    var studentIds = ['18011862', '18011863', '18011864', '18011865', '18011866', '18011867', '18011868', '18011869', '18011870', '18011871', '18011873', '18011874', '18011875', '18011876', '18011877', '18011878'];
+    var studentIds = ['18011862', '18011863', '18011864', '18011865', '18011866', '18011867', '18011868', '18011869', '18011870', '18011871', '18011873', '18011874', '18011875', '18011876', '18011877'];
     // 학번과 대응되도록 넘어와야함.
-    var scores = [50, 50, 60, 60, 60, 10, 20, 20, 40, 70, 80, 90, 40, 40, 50, 50];
+    var scores = [50, 60, 60, 60, 10, 20, 20, 40, 70, 80, 90, 40, 40, 50, 50];
     // 최고 점수
     var max_score = 100;
+    // 부정 행위가 높은 순서대로 정렬되어야함. [250, 100, 80, 50, 20]
+    var issueY = ['Total issue', 'Object issue', 'face issue', 'hand issue', 'eye issue'];
+    var issueCount = [
+        [60, 40, 10, 7, 3],
+        [60, 45, 7, 5, 3],
+        [50, 30, 10, 7, 3],
+        [35, 20, 10, 3, 2],
+        [35, 25, 5, 3, 2],
+        [30, 20, 7, 2, 1],
+        [30, 20, 7, 2, 1],
+        [15, 7, 4, 3, 1],
+        [15, 8, 3, 3, 1],
+        [15, 7, 5, 2, 1],
+        [15, 9, 3, 2, 1],
+        [15, 10, 3, 1, 1],
+        [10, 4, 3, 2, 1],
+        [5, 4, 1, 0, 0],
+        [2, 1, 1, 0, 0]
+    ];
+
 
     ///////////////// Preprocessing /////////////////
 
     // 넘어온 data의 개수 만큼 Rank 생성
     var mcpX = [];
     for(var i=1 ; i<mcpY.length+1 ; i++) mcpX.push(i);
+
+    var totalIssueX = [];
+    var highIssue = [];
+    var lowIssue = [];
+
+    var highIssueX = [];
+    var lowIssueX = [];
+
+    for(var j=0 ; j<5 ; j++){
+        var issueCounter = 0;
+        for(var i=0;i<mcpY.length;i++){
+            issueCounter += issueCount[i][j];
+        }
+        totalIssueX.push(issueCounter);
+    }
     
     var colorTable = []
     var score_high = []
@@ -48,16 +83,19 @@
         if (mcpY[i] >= 0.9) {
             colorTable.push('rgba(222, 45, 38, 0.8)');
             score_high.push(scores[i]);
+            highIssue.push(issueCount[i]);
             over9++;
         }
         else if (mcpY[i] >= 0.7) {
             colorTable.push('rgba(222, 45, 38, 0.6)');
             score_high.push(scores[i]);
+            highIssue.push(issueCount[i]);
             over7++;
         }
         else if (mcpY[i] >= 0.5) {
             colorTable.push('rgba(222, 45, 38, 0.3)');
             score_high.push(scores[i]);
+            highIssue.push(issueCount[i]);
             over5++;
         }
         else {
@@ -67,9 +105,26 @@
             }
             colorTable.push('rgba(222, 45, 38, 0.1)');
             score_low.push(scores[i]);
+            lowIssue.push(issueCount[i]);
             under5++;
         }
-    };
+    }
+
+    for(var j=0 ; j<5 ; j++){
+        var issueCounter = 0;
+        for(var i=0;i<highIssue.length;i++){
+            issueCounter += highIssue[i][j];
+        }
+        highIssueX.push(issueCounter);
+    }
+
+    for(var j=0 ; j<5 ; j++){
+        var issueCounter = 0;
+        for(var i=0;i<lowIssue.length;i++){
+            issueCounter += lowIssue[i][j];
+        }
+        lowIssueX.push(issueCounter);
+    }
 
     var pieVal = [over9, over7, over5, under5];
 
@@ -203,8 +258,8 @@
     var totalFunnel_issue = {
         type: 'funnel',
         name: 'Total Statistics',
-        y: ['Total issue', 'Object issue', 'face issue', 'hand issue', 'eye issue'],
-        x: [250, 100, 80, 50, 20],
+        y: issueY,
+        x: totalIssueX,
         hoverinfo: 'x+percent initial+percent total',
         marker: {
             color: 'rgba(104, 104, 104, 1)'
@@ -215,8 +270,8 @@
     var highFunnel_issue = {
         type: 'funnel',
         name: 'High Statistics',
-        y: ['Total issue', 'Object issue', 'face issue', 'hand issue', 'eye issue'],
-        x: [190, 90, 50, 30, 20],
+        y: issueY,
+        x: highIssueX,
         hoverinfo: 'x+percent initial+percent total',
         marker: {
             color: 'rgba(222, 45, 38, 0.8)'
@@ -227,8 +282,8 @@
     var lowFunnel_issue = {
         type: 'funnel',
         name: 'Low Statistics',
-        y: ['Total issue', 'Object issue', 'face issue', 'hand issue', 'eye issue'],
-        x: [60, 30, 15, 10, 5],
+        y: issueY,
+        x: lowIssueX,
         hoverinfo: 'x+percent initial+percent total',
         marker: {
             color: 'rgba(222, 45, 38, 0.3)'
