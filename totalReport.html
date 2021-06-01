@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src="./static/video/log/anyvideo/anyvideo-hand_log.json"></script>
+</head>
+
+<body>
+    <div id='myDiv'></div>
+    <div id='myDiv1'></div>
+    <div id='myDiv2'></div>
+    <div id='myDiv3'></div>
+</body>
+<script>
+    // 부정 지수 값 (높은 순서 대로)
+    var mcpY = [0.99, 0.99, 0.98, 0.98, 0.85, 0.85, 0.65, 0.64, 0.40, 0.38, 0.3, 0.3, 0.28, 0.2, 0.18, 0.1];
+    // 높은 순서대로 넘어와야 함.
+    var studentIds = ['18011862', '18011863', '18011864', '18011865', '18011866', '18011867', '18011868', '18011869', '18011870', '18011871', '18011873', '18011874', '18011875', '18011876', '18011877', '18011878'];
+    // 학번과 대응되도록 넘어와야함.
+    var scores = [50, 50, 60, 60, 60, 10, 20, 20, 40, 70, 80, 90, 40, 40, 50, 50];
+    // 최고 점수
+    var max_score = 100;
+
+    ///////////////// Preprocessing /////////////////
+
+    // 넘어온 data의 개수 만큼 Rank 생성
+    var mcpX = [];
+    for(var i=1 ; i<mcpY.length+1 ; i++) mcpX.push(i);
+    
+    var colorTable = []
+    var score_high = []
+    var score_low = []
+
+    var threshold = 0;
+    var flag = true;
+
+    var over9 = 0;
+    var over7 = 0;
+    var over5 = 0;
+    var under5 = 0;
+
+    for(var i=0 ; i<mcpX.length ; i++) {
+        if (mcpY[i] >= 0.9) {
+            colorTable.push('rgba(222, 45, 38, 0.8)');
+            score_high.push(scores[i]);
+            over9++;
+        }
+        else if (mcpY[i] >= 0.7) {
+            colorTable.push('rgba(222, 45, 38, 0.6)');
+            score_high.push(scores[i]);
+            over7++;
+        }
+        else if (mcpY[i] >= 0.5) {
+            colorTable.push('rgba(222, 45, 38, 0.3)');
+            score_high.push(scores[i]);
+            over5++;
+        }
+        else {
+            if(flag){
+                threshold = i+1 - 0.5;
+                flag = false;
+            }
+            colorTable.push('rgba(222, 45, 38, 0.1)');
+            score_low.push(scores[i]);
+            under5++;
+        }
+    };
+
+    var pieVal = [over9, over7, over5, under5];
+
+    //////////////////////////////////////////
+
+    ///////////////// Plots /////////////////
+
+    var bar_mcp = {
+        x: mcpX,
+        y: mcpY,
+        text: studentIds,
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'MCP(Mean Cheating Probability)',
+        marker: {
+            color: colorTable,
+        },
+    };
+
+    var table_mcp = {
+        type: 'table',
+        columnwidth: [150, 200, 200, 150],
+        columnorder: [0, 1, 2, 3],
+        header: {
+            values: ['Priority', 'MCP value', 'Student ID'],
+            align: "center",
+            line: {width: 1, color: 'rgb(50, 50, 50)'},
+            fill: {color: ['rgb(222, 45, 38)']},
+            font: {family: "Arial", size: 14, color: "white"}
+        },
+        cells: {
+            values: [mcpX, mcpY, studentIds],
+            align: ["center", "center", "center"],
+            line: {color: "black", width: 1},
+            fill: {color: ['rgba(222, 45, 38, 0.2)', 'rgb(255, 255, 255)', colorTable]},
+            font: {family: "Arial", size: 13, color: ["black"]}
+        },
+        xaxis: 'x',
+        yaxis: 'y',
+        domain: {x: [0,0.4], y: [0, 1]}
+    };
+    
+    var pie_mcp = {
+       values: pieVal,
+       labels: ['Over 0.9s', 'Over 0.7s', 'Over 0.5s', 'Thresholds'],
+       type: 'pie',
+       name: 'MCP Rate',
+       hoverinfo: 'label+percent+name',
+       hole: .4,
+       textposition: 'inside',
+       textinfo: 'label+percent',
+       marker: {
+           colors: ['rgba(222, 45, 38, 0.8)','rgba(222, 45, 38, 0.6)','rgba(222, 45, 38, 0.4)','rgba(222, 45, 38, 0.2)']
+       },
+       domain: {
+           row: 0,
+           column: 1
+       },
+    };
+
+    var totalHistogram_score = {
+        x: scores,
+        name : 'Total Distribution',
+        type: 'histogram',
+        marker: {
+            color: 'rgba(104,104,104,1)'
+        },
+        xaxis: 'x1',
+        xaxis: 'y1'
+    }
+
+    var highHistogram_score = {
+        x: score_high,
+        name : 'MCP High Group',
+        marker: {
+            color: 'rgba(222, 45, 38, 0.9)'
+        },
+        type: "histogram",
+        xaxis: 'x2',
+        yaxis: 'y2'
+    }
+
+    var lowHistogram_score = {
+        x: score_low,
+        name : 'MCP Low Group',
+        marker: {
+            color: 'rgba(222, 45, 38, 0.4)'
+        },
+        type: "histogram",
+        xaxis: 'x2',
+        yaxis: 'y2'
+    }
+
+    var totalBox_score = {
+        name: 'Total statistics',
+        y : scores,
+        marker: {
+            color: 'rgba(104,104,104,1)'
+        },
+        type: 'box',
+        xaxis: 'x3',
+        yaxis: 'y3',
+        boxmean: 'sd'
+    };
+
+    var highBox_score = {
+        name: 'High statistics',
+        y : score_high,
+        marker: {
+            color: 'rgba(222, 45, 38, 0.9)'
+        },
+        type: 'box',
+        xaxis: 'x3',
+        yaxis: 'y3',
+        boxmean: 'sd'
+    };
+
+    var lowBox_score = {
+        name: 'Low statistics',
+        y : score_low,
+        marker: {
+            color: 'rgba(222, 45, 38, 0.4)'
+        },
+        type: 'box',
+        xaxis: 'x3',
+        yaxis: 'y3',
+        boxmean: 'sd'
+    };
+
+    var totalFunnel_issue = {
+        type: 'funnel',
+        name: 'Total Statistics',
+        y: ['Total issue', 'Object issue', 'face issue', 'hand issue', 'eye issue'],
+        x: [250, 100, 80, 50, 20],
+        hoverinfo: 'x+percent initial+percent total',
+        marker: {
+            color: 'rgba(104, 104, 104, 1)'
+        },
+        textinfo: 'value'
+    }
+
+    var highFunnel_issue = {
+        type: 'funnel',
+        name: 'High Statistics',
+        y: ['Total issue', 'Object issue', 'face issue', 'hand issue', 'eye issue'],
+        x: [190, 90, 50, 30, 20],
+        hoverinfo: 'x+percent initial+percent total',
+        marker: {
+            color: 'rgba(222, 45, 38, 0.8)'
+        },
+        textinfo: 'value'
+    }
+
+    var lowFunnel_issue = {
+        type: 'funnel',
+        name: 'Low Statistics',
+        y: ['Total issue', 'Object issue', 'face issue', 'hand issue', 'eye issue'],
+        x: [60, 30, 15, 10, 5],
+        hoverinfo: 'x+percent initial+percent total',
+        marker: {
+            color: 'rgba(222, 45, 38, 0.3)'
+        },
+        textinfo: 'value'
+    }
+
+    /////////////////////////////////////////
+
+    ///////////////// Datas /////////////////
+    
+    var mcpReport_table_pie = [table_mcp, pie_mcp];
+    var mcpReport_bar = [bar_mcp];
+    var scoreReport = [totalBox_score, highBox_score, lowBox_score, totalHistogram_score, highHistogram_score, lowHistogram_score];
+    var issueReport = [totalFunnel_issue, highFunnel_issue, lowFunnel_issue];
+
+    /////////////////////////////////////////
+
+    ///////////////// Axis //////////////////
+
+    var axis1 = {domain: [0, 0.48], anchor: 'y1', showticklabels: false}
+    var axis2 = {domain: [0.52, 1], anchor: 'y2', showticklabels: false}
+    var axis3 = {domain: [0, 1], anchor: 'y3'} // box plot
+    var axis4 = {domain: [0.02, 0.48], anchor: 'x1', hoverformat: '.2f'}
+    var axis5 = {domain: [0.02, 0.48], anchor: 'x2', hoverformat: '.2f'}
+    var axis6 = {domain: [0.57, 1], anchor: 'x3'} // box plot
+
+    var axis = {
+        showline: true,
+        zeroline: false,
+        showgrid: false,
+        mirror:true,
+        ticklen: 5,
+        gridcolor: '#ffffff',
+        tickfont: {size: 14},
+    }
+
+    /////////////////////////////////////////
+
+    ///////////////// Layouts ///////////////
+
+    var mcpLayout_table_pie = {
+        title : 'Mean Cheating Probability Report',
+
+        height: 450,
+        width: 830,
+        
+        annotations: [
+            {
+                font: {
+                    size: 18
+                },
+                showarrow: false,
+                text: 'MCP Rate',
+                x: 0.84,
+                y: 0.5
+            }
+        ],
+
+        grid: {rows: 1, columns: 2}
+    }
+
+    var mcpLayout_bar = {
+
+        height: 450,
+        width: 830,
+
+        shapes: [
+            {
+                type: 'line',
+                x0: threshold,
+                y0: 0,
+                x1: threshold,
+                y1: 1,
+                line: {
+                    color: 'rgb(222, 45, 38)',
+                    width: 2,
+                    dash: 'dashdot'
+                },
+            }
+        ],
+
+        annotations: [
+           {
+               x: threshold,
+               y: 0.8,
+               xref: 'x2',
+               yref: 'y2',
+               text: 'Threshold',
+               showarrow: true,
+               arrowhead: 3,
+               ax: +40,
+               ay: -20
+           }
+        ]
+    };
+
+    var scoreLayout = {
+        title: 'Student Scores',
+        showlegend: false,
+        
+
+        height: 600,
+        width: 830,
+        
+        
+        xaxis1: Object.assign(axis1, axis),
+        xaxis2: Object.assign(axis2, axis),
+        xaxis3: Object.assign(axis3, axis),
+        yaxis1: Object.assign(axis4, axis),
+        yaxis2: Object.assign(axis5, axis),
+        yaxis3: Object.assign(axis6, axis)
+    }
+
+    var issueLayout = {
+        title: 'Issue statistics',
+        height: 450,
+        width: 900,
+        margin: {l: 150, r:0},
+        width: 600,
+        height: 500,
+        funnelmode: 'stack',
+        showlegen: 'true'
+    }
+    /////////////////////////////////////////
+
+    ///////////////// Divs //////////////////
+
+    Plotly.newPlot('myDiv', mcpReport_table_pie, mcpLayout_table_pie);
+    Plotly.newPlot('myDiv1', mcpReport_bar, mcpLayout_bar);
+    Plotly.newPlot('myDiv2', scoreReport, scoreLayout);
+    Plotly.newPlot('myDiv3', issueReport, issueLayout);
+
+    /////////////////////////////////////////
+</script>
+
+</html>
