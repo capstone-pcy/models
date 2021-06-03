@@ -11,20 +11,22 @@
 </head>
 
 <body>
-    <div id='myDiv'></div>
     <div id='myDiv1'></div>
     <div id='myDiv2'></div>
     <div id='myDiv3'></div>
+    <div id='myDiv4'></div>
     <div id='myDiv5'></div>
+    <div id='myDiv6'></div>
+    <div id='myDiv7'></div>
 </body>
 <script>
     // 부정 지수 값 (높은 순서 대로)
-    var macList = [0.99, 0.98, 0.98, 0.85, 0.85, 0.65, 0.64, 0.40, 0.38, 0.3, 0.3, 0.28, 0.2, 0.18, 0.1];
+    var mcpList = [0.99, 0.99, 0.98, 0.98, 0.98, 0.98, 0.85, 0.85, 0.85, 0.85, 0.65, 0.65, 0.64, 0.64, 0.40, 0.40, 0.38, 0.38, 0.3, 0.3, 0.3, 0.3, 0.28, 0.28, 0.2, 0.2, 0.18, 0.18, 0.1, 0.1];
     // 높은 순서대로 넘어와야 함.
-    var studentIds = ["18011862", "18011863", "18011864", "18011865", "18011866", "18011867", "18011868", "18011869", "18011870", "18011871", "18011873", "18011874", "18011875", "18011876", "18011877"];
-    var issueRank = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'];
+    var studentIds = ["18011862", "18011863", "18011864", "18011865", "18011866", "18011867", "18011868", "18011869", "18011870", "18011871", "18011873", "18011874", "18011875", "18011876", "18011877", "18011878", "18011879", "18011880", "18011881", "18011882", "18011883", "18011884", "18011885", "18011886", "18011887", "18011888", "18011889", "18011890", "18011891", "18011892"];
+    var issueRank = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'];
     // 학번과 대응되도록 넘어와야함.
-    var scores = [50, 60, 60, 60, 10, 20, 20, 40, 70, 80, 90, 40, 40, 50, 50];
+    var scores = [50, 60, 60, 60, 10, 20, 20, 40, 70, 80, 90, 40, 40, 50, 50, 50, 60, 60, 60, 10, 20, 20, 40, 70, 80, 90, 40, 40, 50, 50];
     // 최고 점수
     var max_score = 100;
     // 부정 행위가 높은 순서대로 정렬되어야함. [250, 100, 80, 50, 20]
@@ -32,37 +34,67 @@
     var heatIssueList = ['Object issue', 'face issue', 'hand issue', 'eye issue'];
     var issueCount = [
         [60, 40, 10, 7, 3],
+        [60, 40, 10, 7, 3],
+        [60, 45, 7, 5, 3],
         [60, 45, 7, 5, 3],
         [50, 30, 10, 7, 3],
+        [50, 30, 10, 7, 3],
         [35, 20, 10, 3, 2],
+        [35, 20, 10, 3, 2],
+        [35, 25, 5, 3, 2],
         [35, 25, 5, 3, 2],
         [30, 20, 7, 2, 1],
         [30, 20, 7, 2, 1],
+        [30, 2, 7, 20, 1],
+        [30, 2, 7, 20, 1],
+        [15, 7, 4, 3, 1],
         [15, 7, 4, 3, 1],
         [15, 8, 3, 3, 1],
+        [15, 8, 3, 3, 1],
         [15, 7, 5, 2, 1],
-        [15, 9, 3, 2, 1],
+        [15, 7, 5, 2, 1],
+        [15, 2, 3, 9, 1],
+        [15, 2, 3, 9, 1],
+        [15, 10, 3, 1, 1],
         [15, 10, 3, 1, 1],
         [10, 4, 3, 2, 1],
+        [10, 4, 3, 2, 1],
         [5, 4, 1, 0, 0],
+        [5, 4, 1, 0, 0],
+        [2, 1, 1, 0, 0],
         [2, 1, 1, 0, 0]
     ];
 
     var heatMapZVals = [
         [40, 10, 7, 3],
+        [40, 10, 7, 3],
+        [45, 7, 5, 3],
         [45, 7, 5, 3],
         [30, 10, 7, 3],
+        [30, 10, 7, 3],
         [20, 10, 3, 2],
+        [20, 10, 3, 2],
+        [25, 5, 3, 2],
         [25, 5, 3, 2],
         [20, 7, 2, 1],
         [20, 7, 2, 1],
+        [2, 7, 20, 1],
+        [2, 7, 20, 1],
+        [7, 4, 3, 1],
         [7, 4, 3, 1],
         [8, 3, 3, 1],
+        [8, 3, 3, 1],
         [7, 5, 2, 1],
-        [9, 3, 2, 1],
+        [7, 5, 2, 1],
+        [2, 3, 9, 1],
+        [2, 3, 9, 1],
+        [10, 3, 1, 1],
         [10, 3, 1, 1],
         [4, 3, 2, 1],
+        [4, 3, 2, 1],
         [4, 1, 0, 0],
+        [4, 1, 0, 0],
+        [1, 1, 0, 0],
         [1, 1, 0, 0]
     ]
 
@@ -91,7 +123,7 @@
 
     // 넘어온 data의 개수 만큼 Rank 생성
     var mcpRank = [];
-    for(var i=1 ; i<macList.length+1 ; i++) mcpRank.push(i);
+    for(var i=1 ; i<mcpList.length+1 ; i++) mcpRank.push(i);
 
     var totalIssueX = [];
     var highIssue = [];
@@ -102,7 +134,7 @@
 
     for(var j=0 ; j<5 ; j++){
         var issueCounter = 0;
-        for(var i=0;i<macList.length;i++){
+        for(var i=0;i<mcpList.length;i++){
             issueCounter += issueCount[i][j];
         }
         totalIssueX.push(issueCounter);
@@ -121,19 +153,19 @@
     var under5 = 0;
 
     for(var i=0 ; i<mcpRank.length ; i++) {
-        if (macList[i] >= 0.9) {
+        if (mcpList[i] >= 0.9) {
             colorTable.push('rgba(222, 45, 38, 0.8)');
             score_high.push(scores[i]);
             highIssue.push(issueCount[i]);
             over9++;
         }
-        else if (macList[i] >= 0.7) {
+        else if (mcpList[i] >= 0.7) {
             colorTable.push('rgba(222, 45, 38, 0.6)');
             score_high.push(scores[i]);
             highIssue.push(issueCount[i]);
             over7++;
         }
-        else if (macList[i] >= 0.5) {
+        else if (mcpList[i] >= 0.5) {
             colorTable.push('rgba(222, 45, 38, 0.3)');
             score_high.push(scores[i]);
             highIssue.push(issueCount[i]);
@@ -175,7 +207,7 @@
 
     var bar_mcp = {
         x: mcpRank,
-        y: macList,
+        y: mcpList,
         text: studentIds,
         xaxis: 'x2',
         yaxis: 'y2',
@@ -188,25 +220,24 @@
 
     var table_mcp = {
         type: 'table',
-        columnwidth: [150, 200, 200, 150],
-        columnorder: [0, 1, 2, 3],
+        columnwidth: [150, 200, 200],
+        columnorder: [0, 1, 2],
         header: {
             values: ['Priority', 'MCP value', 'Student ID'],
             align: "center",
             line: {width: 1, color: 'rgb(50, 50, 50)'},
             fill: {color: ['rgb(222, 45, 38)']},
-            font: {family: "Arial", size: 14, color: "white"}
+            font: {family: "Arial", size: 16, color: "white"},
+            height: 32
         },
         cells: {
-            values: [mcpRank, macList, studentIds],
+            values: [mcpRank, mcpList, studentIds],
             align: ["center", "center", "center"],
             line: {color: "black", width: 1},
             fill: {color: ['rgba(222, 45, 38, 0.2)', 'rgb(255, 255, 255)', colorTable]},
-            font: {family: "Arial", size: 13, color: ["black"]}
+            font: {family: "Arial", size: 14, color: ["black"]},
+            height: 30
         },
-        xaxis: 'x',
-        yaxis: 'y',
-        domain: {x: [0,0.4], y: [0, 1]}
     };
     
     var pie_mcp = {
@@ -220,11 +251,7 @@
        textinfo: 'label+percent',
        marker: {
            colors: ['rgba(222, 45, 38, 0.8)','rgba(222, 45, 38, 0.6)','rgba(222, 45, 38, 0.4)','rgba(222, 45, 38, 0.2)']
-       },
-       domain: {
-           row: 0,
-           column: 1
-       },
+       }
     };
 
     var totalHistogram_score = {
@@ -260,6 +287,16 @@
         yaxis: 'y2'
     }
 
+    var box_mcp = {
+        name: 'MCP Statistic',
+        y : mcpList,
+        marker: {
+            color: 'rgba(222, 45, 38, 0.8)'
+        },
+        type: 'box',
+        boxmean: 'sd'
+    }
+    
     var totalBox_score = {
         name: 'Total statistics',
         y : scores,
@@ -339,14 +376,16 @@
         type: 'heatmap',
         colorscale: heatColorTable,
         showscale : true,
-        ygap: 2,
-        xgap: 2,
+        ygap: 1,
+        xgap: 1,
     }
     /////////////////////////////////////////
 
     ///////////////// Datas /////////////////
     
-    var mcpReport_table_pie = [table_mcp, pie_mcp];
+    var mcpReport_table = [table_mcp];
+    var mcpReport_pie = [pie_mcp];
+    var mcpReport_box = [box_mcp];
     var mcpReport_bar = [bar_mcp];
     var scoreReport = [totalBox_score, highBox_score, lowBox_score, totalHistogram_score, highHistogram_score, lowHistogram_score];
     var issueReport = [totalFunnel_issue, highFunnel_issue, lowFunnel_issue];
@@ -377,12 +416,28 @@
 
     ///////////////// Layouts ///////////////
 
-    var mcpLayout_table_pie = {
-        title : 'Mean Cheating Probability Report',
+    var mcpLayout_table = {
+        title : 'Mean Cheating Probability List',
 
-        height: 450,
+        height : 1200,
+        width : 830
+    }
+
+    var mcpLayout_box = {
+        title: 'Mean Cheating Probaility Statistics',
+        showlegend: false,
+
+        height: 600,
         width: 830,
-        
+
+    }
+
+    var mcpLayout_pie = {
+        title : 'Mean Cheating Probability Rate',
+
+        height : 450,
+        width: 830,
+
         annotations: [
             {
                 font: {
@@ -390,12 +445,10 @@
                 },
                 showarrow: false,
                 text: 'MCP Rate',
-                x: 0.84,
+                x: 0.5,
                 y: 0.5
             }
-        ],
-
-        grid: {rows: 1, columns: 2}
+        ]
     }
 
     var mcpLayout_bar = {
@@ -477,8 +530,8 @@
             autosize: false,
             ticklen: 8
         },
-        height: 830,
-        width: 830,
+        height: 600,
+        width: 900,
     }
 
     for ( var i = 0; i < studentIds.length; i++ ) {
@@ -513,11 +566,13 @@
 
     ///////////////// Divs //////////////////
 
-    Plotly.newPlot('myDiv', mcpReport_table_pie, mcpLayout_table_pie);
-    Plotly.newPlot('myDiv1', mcpReport_bar, mcpLayout_bar);
-    Plotly.newPlot('myDiv2', scoreReport, scoreLayout);
-    Plotly.newPlot('myDiv3', issueReport, issueLayout);
-    Plotly.newPlot('myDiv5', issueReport_heatMap, issueLaytout_heatMap);
+    Plotly.newPlot('myDiv1', mcpReport_table, mcpLayout_table);
+    Plotly.newPlot('myDiv2', mcpReport_pie, mcpLayout_pie);
+    Plotly.newPlot('myDiv3', mcpReport_bar, mcpLayout_bar);
+    Plotly.newPlot('myDiv4', scoreReport, scoreLayout);
+    Plotly.newPlot('myDiv5', issueReport, issueLayout);
+    Plotly.newPlot('myDiv6', issueReport_heatMap, issueLaytout_heatMap);
+    Plotly.newPlot('myDiv7', mcpReport_box, mcpLayout_box);
 
     /////////////////////////////////////////
 </script>
