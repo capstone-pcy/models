@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>personalReport</title>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+</head>
+
+<body>
+    <div id='myDiv'></div>
+</body>
+<script>
+    ////////////////////// datas //////////////////////
+    var face_log = {"0": 0.38, "1": 0.98, "2": 0.97, "3": 1.0, "4": 1.0, "5": 1.0, "6": 1.0, "7": 0.99, "8": 0.98, "9": 0.97, "10": 0.95, "11": 0.99, "12": 0.3};
+    var multiFace_log = {"0": 0.0, "1": 0.0, "2": 0.0, "3": 0.0, "4": 0.3, "5": 0.7, "6": 0.2, "7": 0.0, "8": 0.0, "9": 0.0, "10": 0.0, "11": 0.0, "12": 0.0}
+    //////////////////////////////////////////////////
+
+    ///////////////// Preprocessing /////////////////
+    var face_timeLine = Object.keys(face_log);
+    var face_prob = Object.values(face_log);
+
+    var multiFace_timeLine = Object.keys(multiFace_log);
+    var multiFace_prob = Object.values(multiFace_log);
+    //////////////////////////////////////////
+
+    ///////////////// Plots /////////////////
+    var face_plot = {
+        x: face_timeLine,
+        y: face_prob,
+        mode: 'lines+markers',
+        name: 'Gazing front',
+        type: 'scatter',
+        marker: {
+            color: 'rgba(222, 45, 38, 0.8)',
+            size: 8
+        },
+        line: {
+            dash: 'dashdot',
+            shape: 'spline'
+        }
+    }
+
+    var multiFace_plot = {
+        x: multiFace_timeLine,
+        y: multiFace_prob,
+        mode: 'lines+markers',
+        name: 'Multi Face',
+        type: 'scatter',
+        line: {
+            dash: 'dashdot',
+            shape: 'spline'
+        },
+        marker: {
+            color: 'rgba(222, 45, 38, 0.4)',
+            size: 8
+        }
+    }
+    /////////////////////////////////////////
+
+    ///////////////// Datas /////////////////
+    var line = [face_plot, multiFace_plot];
+    /////////////////////////////////////////
+
+    ///////////////// Axis //////////////////
+
+    /////////////////////////////////////////
+
+    ///////////////// Layouts ///////////////
+    var lineLayout = {
+        xaxis: {
+            title: 'Time Line',
+            showgrid: false,
+            zeroline: false
+        },
+        yaxis: {
+            title: 'Probability',
+        }
+    };
+    /////////////////////////////////////////
+
+    ///////////////// Divs //////////////////
+    Plotly.newPlot('myDiv', line, lineLayout);
+    /////////////////////////////////////////
+</script>
+
+</html>
